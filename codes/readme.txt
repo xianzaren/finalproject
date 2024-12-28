@@ -1,0 +1,2 @@
+makeimg：使用perlin noise和FFT 制作图像和数据
+findcsv：通过gpt输出的坐标找到csv表中对应的值
