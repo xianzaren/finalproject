@@ -87,47 +87,48 @@ def main():
         os.makedirs(output_dir, exist_ok=True)
         result_file_path = os.path.join(output_dir, "result.txt")
         with open(result_file_path, "w") as result_file:
-            for csv_filename in os.listdir(csv_dir):
-                if csv_filename.endswith(".csv"):
-                    csv_filepath = os.path.join(csv_dir, csv_filename)
-                    print(f"正在读取 CSV 文件: {csv_filepath}")
-                    noise = np.loadtxt(csv_filepath, delimiter=",", skiprows=1)
-                    noise = (noise - noise.min()) / (noise.max() - noise.min())
+            for i in range(1, 4):
+                for csv_filename in os.listdir(csv_dir):
+                    if csv_filename.endswith(".csv"):
+                        csv_filepath = os.path.join(csv_dir, csv_filename)
+                        print(f"正在读取 CSV 文件: {csv_filepath}")
+                        noise = np.loadtxt(csv_filepath, delimiter=",", skiprows=1)
+                        noise = (noise - noise.min()) / (noise.max() - noise.min())
 
-                    # 随机生成 A 和 B 的位置
-                    ax = random.randint(30, noise.shape[1] - 351 - 30)
-                    ay = random.randint(30, noise.shape[0] - 30)
-                    bx, by = ax + 350, ay
-                    ab_positions = (ax, ay, bx, by)
+                        # 随机生成 A 和 B 的位置
+                        ax = random.randint(30, noise.shape[1] - 351 - 30)
+                        ay = random.randint(30, noise.shape[0] - 30)
+                        bx, by = ax + 350, ay
+                        ab_positions = (ax, ay, bx, by)
 
-                    # 生成真实剖面和伪造剖面
-                    real_profile = noise[ay, ax:bx + 1]
-                    fake_profiles = []
-                    for _ in range(5):
-                        while True:
-                            fake_ax = random.randint(30, noise.shape[1] - 351 - 30)
-                            fake_ay = random.randint(30, noise.shape[0] - 30)
-                            fake_bx, fake_by = fake_ax + 350, fake_ay
-                            if (fake_ax, fake_ay) != (ax, ay):
-                                break
-                        fake_profiles.append((fake_ax, fake_ay, fake_bx, fake_by, noise[fake_ay, fake_ax:fake_bx + 1]))
-                    all_profiles = [(ax, ay, bx, by, real_profile)] + fake_profiles
-                    random.shuffle(all_profiles)
-                    real_index = all_profiles.index((ax, ay, bx, by, real_profile))
+                        # 生成真实剖面和伪造剖面
+                        real_profile = noise[ay, ax:bx + 1]
+                        fake_profiles = []
+                        for _ in range(5):
+                            while True:
+                                fake_ax = random.randint(30, noise.shape[1] - 351 - 30)
+                                fake_ay = random.randint(30, noise.shape[0] - 30)
+                                fake_bx, fake_by = fake_ax + 350, fake_ay
+                                if (fake_ax, fake_ay) != (ax, ay):
+                                    break
+                            fake_profiles.append((fake_ax, fake_ay, fake_bx, fake_by, noise[fake_ay, fake_ax:fake_bx + 1]))
+                        all_profiles = [(ax, ay, bx, by, real_profile)] + fake_profiles
+                        random.shuffle(all_profiles)
+                        real_index = all_profiles.index((ax, ay, bx, by, real_profile))
 
-                    # 输出标量场图像
-                    scalar_field_filepath = os.path.join(output_dir,
-                                                         f"ScalarField_{os.path.splitext(csv_filename)[0]}_{colormap}.png")
-                    generate_scalar_field_image(noise, colormap, ab_positions, scalar_field_filepath)
+                        # 输出标量场图像
+                        scalar_field_filepath = os.path.join(output_dir,
+                                                             f"ScalarField_{os.path.splitext(csv_filename)[0]}_{colormap}_{i}.png")
+                        generate_scalar_field_image(noise, colormap, ab_positions, scalar_field_filepath)
 
-                    # 输出剖面曲线图像
-                    profiles_filepath = os.path.join(output_dir,
-                                                     f"Profiles_{os.path.splitext(csv_filename)[0]}_{colormap}.png")
-                    generate_profiles_image(noise, colormap, ab_positions, all_profiles, profiles_filepath)
+                        # 输出剖面曲线图像
+                        profiles_filepath = os.path.join(output_dir,
+                                                         f"Profiles_{os.path.splitext(csv_filename)[0]}_{colormap}_{i}.png")
+                        generate_profiles_image(noise, colormap, ab_positions, all_profiles, profiles_filepath)
 
-                    result_file.write(f"{csv_filename}: 真实曲线是第 {real_index + 1} 条\n")
-                    print(f"{csv_filename}: 真实曲线是第 {real_index + 1} 条")
-
+                        # 修改后的代码段
+                        result_file.write(f"{os.path.basename(profiles_filepath)} + 真实曲线是第 {real_index + 1} 条\n")
+                        print(f"{os.path.basename(profiles_filepath)} + 真实曲线是第 {real_index + 1} 条")
 
 if __name__ == "__main__":
     main()
