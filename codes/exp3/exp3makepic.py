@@ -74,8 +74,14 @@ def generate_scalar_field_image_with_profiles(noise, colormap, output_filepath, 
         ax_profile.spines['right'].set_visible(True)
         ax_profile.spines['left'].set_visible(True)
         ax_profile.spines['bottom'].set_visible(True)
+
+        # 在剖面图上标注 A 和 B
         ax_profile.text(2, profile[0], 'A', color='red', fontsize=10, ha='center', va='bottom')
         ax_profile.text(len(profile) - 1, profile[-1], 'B', color='blue', fontsize=10, ha='center', va='bottom')
+
+        # 标记这是第几张曲线
+        ax_profile.text(0.5, 1.05, f"Curve {i + 1}", transform=ax_profile.transAxes, fontsize=10, ha='center', va='bottom', color='black')
+
     # 调整子图布局，使剖面图更贴合标量场图的宽度
     plt.subplots_adjust(wspace=0.1, hspace=0.5)
 
@@ -94,7 +100,6 @@ def main():
     colromap_list = ['gray','hot','rainbow']
     for colormap in colromap_list:
         output_dir = f"E:\桌面\Final project\color\exp3\{colormap}"  # 输出图像文件夹
-        print(f"正在输出{colormap}的图像")
         # 确保输出目录存在
         os.makedirs(output_dir, exist_ok=True)
         # 结果文件路径
